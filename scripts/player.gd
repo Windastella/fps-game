@@ -23,13 +23,13 @@ func _integrate_forces(state):
 	var aim = get_node("mesh").get_global_transform().basis
 	var direction = Vector3()
 	
-	if Input.is_key_pressed(KEY_W):
+	if Input.is_action_pressed("Forward"):
 		direction -= aim[2]
-	if Input.is_key_pressed(KEY_S):
+	if Input.is_action_pressed("Backward"):
 		direction += aim[2]
-	if Input.is_key_pressed(KEY_A):
+	if Input.is_action_pressed("Left"):
 		direction -= aim[0]
-	if Input.is_key_pressed(KEY_D):
+	if Input.is_action_pressed("Right"):
 		direction += aim[0]
 	direction = direction.normalized()
 	
