@@ -20,9 +20,9 @@ func scene_load(path):
 	scene.instance = instance;
 	loaded_scene.push_back(scene);
 	return scene;
-
+	
 func add_scene(path):
-	var scene = scene_load(path);
+	var scene = scene_load(path);		
 	var target_scene = scene.instance.instance();
 	var name = "obj_"+str(rand_range(99,999));
 	
@@ -34,4 +34,24 @@ func add_scene(path):
 	add_child(target_scene);
 	target_scene = get_node(name);
 	return target_scene;
+	
+func add_map(path):
+	var scene = scene_load(path);
+	if scene.instance == null:
+		get_node("/root/client").dc()
+		return
+	var target_scene = scene.instance.instance();
+	var name = "map"
+	
+	while get_node(name) != null:
+		remove_child(name)
+	
+	target_scene.set_name(name);
+	add_child(target_scene);
+	target_scene = get_node(name);
+	return target_scene;
 
+func clear_map():
+	var childs = get_children()
+	for child in childs:
+		remove_child(child);

@@ -15,6 +15,7 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 40.0
 margin/bottom = 40.0
+__meta__ = { "_editor_collapsed":true }
 
 [node name="hud" type="Control" parent="gui"]
 
@@ -183,6 +184,25 @@ enabled_focus_mode = 2
 shortcut = null
 text = "Connect"
 flat = false
+
+[node name="maplist" type="OptionButton" parent="gui/menu"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 242.0
+margin/top = 228.0
+margin/right = 328.0
+margin/bottom = 248.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Maplist"
+flat = false
+align = 0
+selected = 0
+items = [ "test", null, false, 0, null, "map1", null, false, 1, null ]
 
 [node name="env" type="Spatial" parent="."]
 

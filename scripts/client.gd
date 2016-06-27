@@ -27,6 +27,7 @@ const NET_CLIENT_CONNECTED = 4
 const NET_CLIENT_DISCONNECTED = 5
 const NET_SRV_INIT = 6
 const NET_UPDATE = 7
+const NET_MAPCHANGE = 8
 
 const CMD_SET_POS = 0
 const CMD_SET_NAME = 1
@@ -43,6 +44,8 @@ var lv
 
 var vplayer = null
 
+var mapname = "test"
+
 func _ready():
 	env = get_node("/root/main/env");
 	
@@ -51,10 +54,16 @@ func _ready():
 func _input(ie):
 	if ie.type == InputEvent.KEY:
 		if ie.pressed && ie.scancode == KEY_ESCAPE && connected:
-			connected = false;
-			peer.disconnect();
-			print("Disconnecting...");
+			dc()
 
+func dc():
+	connected = false;
+	peer.disconnect();
+	print("Disconnecting...")
+	get_node("/root/main/gui/menu").show()
+	get_node("/root/main/gui/hud").hide()
+	get_node("/root/main/env").clear_map()
+	
 func connect(ip = "localhost", port = 3000):
 	var address = GDNetAddress.new();
 	address.set_host(ip);
@@ -84,7 +93,7 @@ func connect(ip = "localhost", port = 3000):
 		get_node("/root/main/gui/menu").hide();
 		get_node("/root/main/gui/hud").show();
 		
-		env.add_scene("res://assets/maps/test.tscn");
+		#env.add_scene("res://assets/maps/" + mapname +".tscn");
 		
 		localplayer = env.add_scene("res://assets/prefab/testplayer.scn");
 		localplayer.set_name("player");
@@ -129,6 +138,11 @@ func _process(delta):
 						scn.set_name("vplayer_"+str(pid));
 						#get_node("/root/main/gui/ingame/map_overview").add_object(scn);
 			
+			if data[0] == NET_MAPCHANGE:
+				mapname = data[1]
+				env.add_map("res://assets/maps/" + mapname +".tscn")
+				print(mapname)
+				
 			if data[0] == NET_UPDATE:
 				for i in data[1]:
 					if i[0] == SRV_DATA_PLAYER:

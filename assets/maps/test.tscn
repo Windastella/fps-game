@@ -149,7 +149,9 @@ textures/normal_tc = 0
 textures/shade_param = null
 textures/shade_param_tc = 0
 
-[node name="Node" type="Node"]
+[node name="map" type="Node"]
+
+__meta__ = { "_editor_collapsed":true }
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 

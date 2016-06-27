@@ -12,6 +12,8 @@ var maxplayer = 32;
 var update_time = 0.0;
 var netfps = 30.0;
 
+var mapname = "test";
+
 class CClient:
 	var connected = false;
 	var peer = null;
@@ -32,7 +34,8 @@ const NET_CMD = 3;
 const NET_CLIENT_CONNECTED = 4;
 const NET_CLIENT_DISCONNECTED = 5;
 const NET_SRV_INIT = 6;
-const NET_UPDATE = 7;
+const NET_UPDATE = 7
+const NET_MAPCHANGE = 8
 
 const CMD_SET_POS = 0;
 const CMD_SET_NAME = 1;
@@ -105,8 +108,9 @@ func on_server_start():
 	
 	set_process(true);
 	
-	print("Server started!");
-
+	mapname = get_node("/root/main/gui/menu/maplist").get_item_text(get_node("/root/main/gui/menu/maplist").get_selected())
+	print("Server started!")
+	
 func on_event_received(event):
 	var peer = packet.get_peer(event.get_peer_id());
 	
@@ -117,7 +121,8 @@ func on_event_received(event):
 			client[pid].peer = peer;
 			client[pid].address = peer.get_address();
 			
-			send2c(pid, [], [NET_ACCEPTED, pid], true);
+			send2c(pid, [], [NET_ACCEPTED, pid], true)
+			send2c(pid, [], [NET_MAPCHANGE, mapname], true)
 			
 			player_connected(pid);
 		
