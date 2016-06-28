@@ -18,7 +18,7 @@ const MODE_MSP = 2
 const MODE_DM = 3
 
 var mapname = "test"
-var gamemode = MODE_DM
+var gamemode = MODE_FFA
 
 class CClient:
 	var connected = false;
@@ -26,10 +26,11 @@ class CClient:
 	var address = GDNetAddress.new();
 	
 	# Player Variable
-	var name = "Guy";
-	var pos = Vector3();
-	var rot = Vector3();
-	var lv = Vector3();
+	var name = "Player"
+	var pos = Vector3()
+	var rot = Vector3()
+	var camrot = Vector3()
+	var lv = Vector3()
 
 var client = [];
 
@@ -43,10 +44,10 @@ const NET_SRV_INIT = 6;
 const NET_UPDATE = 7
 const NET_MAPCHANGE = 8
 
-const CMD_SET_POS = 0;
-const CMD_SET_NAME = 1;
+const CMD_SET_POS = 0
+const CMD_SET_NAME = 1
 
-const SRV_DATA_PLAYER = 0;
+const SRV_DATA_PLAYER = 0
 
 func _ready():
 	var args = OS.get_cmdline_args();
@@ -91,6 +92,9 @@ func update_server():
 		return;
 	update_time = time + (1.0/netfps);
 	
+	if gamemode == MODE_FFA:
+		get_node("/root/mode_ffa").ffa_update()
+		
 	for i in range(0, client.size()):
 		if !check_player(i):
 			continue;
@@ -100,7 +104,7 @@ func update_server():
 		for b in range(0, client.size()):
 			if !check_player(b) || i == b:
 				continue;
-			srv_data.push_back([SRV_DATA_PLAYER, b, client[b].pos, client[b].rot, client[b].lv]);
+			srv_data.push_back([SRV_DATA_PLAYER, b, client[b].pos, client[b].rot, client[b].camrot, client[b].lv]);
 		
 		send2c(i, [], [NET_UPDATE, srv_data]);
 
@@ -123,23 +127,26 @@ func on_event_received(event):
 	
 	if event.get_event_type() == GDNetEvent.CONNECT:
 		var pid = get_empty_id();
+			
 		if pid != -1:
 			client[pid].connected = true;
-			client[pid].peer = peer;
-			client[pid].address = peer.get_address();
+			client[pid].peer = peer
+			client[pid].address = peer.get_address()
 			
 			send2c(pid, [], [NET_ACCEPTED, pid], true)
-			send2c(pid, [], [NET_MAPCHANGE, mapname], true)
+			send2c(pid, [], [NET_MAPCHANGE, mapname, gamemode], true)
 			
 			player_connected(pid);
-		
-		return;
+		else:
+			peer.disconnect()
+			
+		return
 	
 	elif event.get_event_type() == GDNetEvent.DISCONNECT:
-		var pid = get_pid_from_peer(peer);
+		var pid = get_pid_from_peer(peer)
 		if pid != -1:
-			player_disconnected(pid);
-			client[pid] = CClient.new();
+			player_disconnected(pid)
+			client[pid] = CClient.new()
 		
 		peer = null;
 	
@@ -148,9 +155,10 @@ func on_event_received(event):
 		if data[0] == NET_PLAYER_VAR:
 			var pid = data[1];
 			if check_player(pid, peer.get_address()):
-				client[pid].pos = data[2];
-				client[pid].rot = data[3];
-				client[pid].lv = data[4];
+				client[pid].pos = data[2]
+				client[pid].rot = data[3]
+				client[pid].camrot = data[4]
+				client[pid].lv = data[5]
 		
 		if data[0] == NET_CHAT:
 			var pid = data[1];

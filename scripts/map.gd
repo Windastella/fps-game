@@ -38,7 +38,8 @@ func add_scene(path):
 func add_map(path):
 	var scene = scene_load(path);
 	if scene.instance == null:
-		get_node("/root/client").dc()
+		get_node("/root/client").disconnected()
+		print("Cannot find map...")
 		return
 	var target_scene = scene.instance.instance();
 	var name = "map"
@@ -54,4 +55,6 @@ func add_map(path):
 func clear_map():
 	var childs = get_children()
 	for child in childs:
-		remove_child(child);
+		remove_child(child)
+	
+	print("Map cleared...")

@@ -40,6 +40,7 @@ var env = null
 var localplayer = null
 var pos
 var rot
+var camrot
 var lv
 
 var vplayer = null
@@ -50,6 +51,7 @@ const MODE_MSP = 2
 const MODE_DM = 3
 
 var mapname = "test"
+var gamemode = MODE_FFA
 
 func _ready():
 	env = get_node("/root/main/env");
@@ -61,7 +63,7 @@ func _input(ie):
 		if ie.pressed && ie.scancode == KEY_ESCAPE && connected:
 			dc()
 
-func dc():
+func disconnected():
 	connected = false;
 	peer.disconnect();
 	print("Disconnecting...")
@@ -93,12 +95,11 @@ func connect(ip = "localhost", port = 3000):
 				break;
 	
 	if !connected:
-		print("Failed Connecting to ",ip,":",str(port),".");
+		print("Failed Connecting to ",ip,":",str(port),".")
+		dc()
 	else:
 		get_node("/root/main/gui/menu").hide();
 		get_node("/root/main/gui/hud").show();
-		
-		#env.add_scene("res://assets/maps/" + mapname +".tscn");
 		
 		localplayer = env.add_scene("res://assets/prefab/testplayer.scn");
 		localplayer.set_name("player");
@@ -113,7 +114,10 @@ func _process(delta):
 		var event = packet.get_event();
 		
 		if event.get_event_type() == GDNetEvent.DISCONNECT:
-			print("Client disconnected.");
+			get_node("/root/main/gui/menu").show()
+			get_node("/root/main/gui/hud").hide()
+			get_node("/root/main/env").clear_map()
+			print("Client disconnected.")
 			peer = null;
 			
 		elif (event.get_event_type() == GDNetEvent.RECEIVE):
@@ -121,7 +125,7 @@ func _process(delta):
 			
 			if data[0] == NET_ACCEPTED:
 				pid = data[1];
-			
+				
 			if data[0] == NET_CLIENT_CONNECTED:
 				var pid = data[1];
 				
@@ -145,22 +149,25 @@ func _process(delta):
 			
 			if data[0] == NET_MAPCHANGE:
 				mapname = data[1]
+				gamemode = data[2]
 				env.add_map("res://assets/maps/" + mapname +".tscn")
-				print(mapname)
+				print("Map change to " + mapname)
 				
 			if data[0] == NET_UPDATE:
 				for i in data[1]:
 					if i[0] == SRV_DATA_PLAYER:
-						var pid = i[1];
-						var pos = i[2];
-						var rot = i[3];
-						var lv = i[4];
+						var pid = i[1]
+						var vpos = i[2]
+						var vrot = i[3]
+						var vcamrot = i[4]
+						var vlv = i[5]
 						
-						var node = env.get_node("vplayer_"+str(pid));
+						var node = env.get_node("vplayer_"+str(pid))
 						if node != null:
-							node.set_translation(pos);
-							node.get_node("body").set_rotation(rot);
-							node.set_linear_velocity(lv);
+							node.set_translation(vpos)
+							node.get_node("body").set_rotation(vrot)
+							node.get_node("body/cam").set_rotation(vcamrot)
+							node.set_linear_velocity(vlv)
 			
 			if data[0] == NET_CMD:
 				if data[1] == CMD_SET_POS:
@@ -195,11 +202,12 @@ func _process(delta):
 	
 	#return;
 	var data = []
-	if (pos != localplayer.get_translation() || rot != localplayer.get_node("body").get_rotation() || lv != localplayer.get_linear_velocity()):
+	if (pos != localplayer.get_translation() || rot != localplayer.get_node("body").get_rotation() ||camrot != localplayer.get_node("body/cam").get_rotation()|| lv != localplayer.get_linear_velocity()):
 		pos = localplayer.get_translation()
 		rot = localplayer.get_node("body").get_rotation()
+		camrot = localplayer.get_node("body/cam").get_rotation()
 		lv = localplayer.get_linear_velocity()
-		send_var([NET_PLAYER_VAR, pid, pos, rot, lv])
+		send_var([NET_PLAYER_VAR, pid, pos, rot, camrot, lv])
 
 func send_var(data, rel = false):
 	if peer == null:
