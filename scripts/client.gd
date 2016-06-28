@@ -15,7 +15,7 @@ class CClient:
 	var node = null;
 	
 	# Player Variable
-	var name = "Guy";
+	var name = "Guy"
 
 var client = []
 
@@ -43,6 +43,11 @@ var rot
 var lv
 
 var vplayer = null
+
+const MODE_FFA = 0
+const MODE_SP = 1
+const MODE_MSP = 2
+const MODE_DM = 3
 
 var mapname = "test"
 

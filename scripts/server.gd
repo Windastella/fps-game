@@ -12,7 +12,13 @@ var maxplayer = 32;
 var update_time = 0.0;
 var netfps = 30.0;
 
-var mapname = "test";
+const MODE_FFA = 0
+const MODE_SP = 1
+const MODE_MSP = 2
+const MODE_DM = 3
+
+var mapname = "test"
+var gamemode = MODE_DM
 
 class CClient:
 	var connected = false;
@@ -101,14 +107,15 @@ func update_server():
 func on_server_start():
 	time = 0.0;
 	
+	mapname = get_node("/root/main/gui/menu/net/maplist").get_item_text(get_node("/root/main/gui/menu/net/maplist").get_selected())
+	maxplayer = get_node("/root/main/gui/menu/net/label5").get_text().to_int()
+	
 	client.clear();
 	client.resize(maxplayer);
 	for i in range(0, client.size()):
 		client[i] = CClient.new();
 	
 	set_process(true);
-	
-	mapname = get_node("/root/main/gui/menu/maplist").get_item_text(get_node("/root/main/gui/menu/maplist").get_selected())
 	print("Server started!")
 	
 func on_event_received(event):
