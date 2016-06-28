@@ -82,6 +82,19 @@ func host(host = "localhost" ,port = 3000):
 		on_server_start();
 		set_process(true);
 
+func close_server():
+	
+	print("Shutting down server")
+	var err = packet.unbind()
+	
+	print(err)
+	
+	if !err:
+		hosted = false
+		set_process(false)
+		client = []
+		print("All clients cleared.")
+		
 func check_events():
 	while packet.is_event_available():
 		var event = packet.get_event();
@@ -92,8 +105,7 @@ func update_server():
 		return;
 	update_time = time + (1.0/netfps);
 	
-	if gamemode == MODE_FFA:
-		get_node("/root/mode_ffa").ffa_update()
+	get_node("/root/game").game_update(gamemode)
 		
 	for i in range(0, client.size()):
 		if !check_player(i):

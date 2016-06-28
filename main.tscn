@@ -15,6 +15,7 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 40.0
 margin/bottom = 40.0
+__meta__ = { "_editor_collapsed":true }
 
 [node name="hud" type="Control" parent="gui"]
 
@@ -73,6 +74,7 @@ margin/top = 0.0
 margin/right = 40.0
 margin/bottom = 40.0
 script/script = ExtResource( 1 )
+__meta__ = { "_editor_collapsed":true }
 
 [node name="net" type="Panel" parent="gui/menu"]
 
@@ -84,6 +86,7 @@ margin/left = 240.0
 margin/top = 130.0
 margin/right = 450.0
 margin/bottom = 350.0
+__meta__ = { "_editor_collapsed":true }
 
 [node name="playerslider" type="HSlider" parent="gui/menu/net"]
 
