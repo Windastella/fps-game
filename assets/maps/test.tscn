@@ -13,8 +13,6 @@ ambient_light/energy = 0.5
 fxaa/enabled = true
 background/mode = 1
 background/color = Color( 0.785156, 0.954681, 1, 1 )
-background/texture = null
-background/cubemap = null
 background/energy = 1.0
 background/scale = 1.0
 background/glow = 0.0
@@ -85,19 +83,13 @@ params/point_size = 1.0
 uv_xform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 textures/diffuse = ExtResource( 2 )
 textures/diffuse_tc = 0
-textures/detail = null
 textures/detail_tc = 0
-textures/specular = null
 textures/specular_tc = 0
-textures/emission = null
 textures/emission_tc = 0
-textures/specular_exp = null
 textures/specular_exp_tc = 0
-textures/glow = null
 textures/glow_tc = 0
 textures/normal = ExtResource( 3 )
 textures/normal_tc = 0
-textures/shade_param = null
 textures/shade_param_tc = 0
 
 [sub_resource type="SphereShape" id=4]
@@ -132,35 +124,26 @@ params/shader_param = 0.5
 params/glow = 0
 params/point_size = 1.0
 uv_xform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
-textures/diffuse = null
 textures/diffuse_tc = 0
-textures/detail = null
 textures/detail_tc = 0
-textures/specular = null
 textures/specular_tc = 0
-textures/emission = null
 textures/emission_tc = 0
-textures/specular_exp = null
 textures/specular_exp_tc = 0
-textures/glow = null
 textures/glow_tc = 0
-textures/normal = null
 textures/normal_tc = 0
-textures/shade_param = null
 textures/shade_param_tc = 0
 
 [node name="map" type="Node"]
 
-__meta__ = { "_editor_collapsed":true }
-
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 
+editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 environment = SubResource( 1 )
-__meta__ = { "_editor_collapsed":true }
 
 [node name="plane" type="StaticBody" parent="WorldEnvironment"]
 
+editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 input/ray_pickable = true
 input/capture_on_drag = false
@@ -174,7 +157,6 @@ friction = 1.0
 bounce = 0.0
 constant_linear_velocity = Vector3( 0, 0, 0 )
 constant_angular_velocity = Vector3( 0, 0, 0 )
-__meta__ = { "_editor_collapsed":true }
 
 [node name="CollisionShape" type="CollisionShape" parent="WorldEnvironment/plane"]
 
@@ -1991,10 +1973,9 @@ shadow/zoffset_scale = 2.0
 
 [node name="bodies" type="Node" parent="."]
 
-__meta__ = { "_editor_collapsed":true }
+[node name="ball" type="RigidBody" parent="bodies" groups=[ "rigidbodies" ]]
 
-[node name="ball" type="RigidBody" parent="bodies"]
-
+editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.05975, -6.4696 )
 input/ray_pickable = true
@@ -2021,7 +2002,6 @@ velocity/linear = Vector3( 0, 0, 0 )
 velocity/angular = Vector3( 0, 0, 0 )
 damp_override/linear = -1.0
 damp_override/angular = -1.0
-__meta__ = { "_editor_collapsed":true }
 
 [node name="MeshInstance" type="MeshInstance" parent="bodies/ball"]
 

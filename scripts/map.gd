@@ -22,9 +22,9 @@ func scene_load(path):
 	return scene;
 	
 func add_scene(path):
-	var scene = scene_load(path);		
-	var target_scene = scene.instance.instance();
-	var name = "obj_"+str(rand_range(99,999));
+	var scene = scene_load(path)
+	var target_scene = scene.instance.instance()
+	var name = "obj_"+str(rand_range(99,999))
 	
 	while get_node(name) != null:
 		randomize();

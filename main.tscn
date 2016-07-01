@@ -7,6 +7,7 @@
 
 [node name="gui" type="Control" parent="."]
 
+editor/display_folded = true
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
@@ -15,10 +16,10 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 40.0
 margin/bottom = 40.0
-__meta__ = { "_editor_collapsed":true }
 
 [node name="hud" type="Control" parent="gui"]
 
+editor/display_folded = true
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
@@ -27,10 +28,10 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 40.0
 margin/bottom = 40.0
-__meta__ = { "_editor_collapsed":true }
 
 [node name="chatmessage" type="Control" parent="gui/hud"]
 
+editor/display_folded = true
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
@@ -39,7 +40,6 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 40.0
 margin/bottom = 40.0
-__meta__ = { "_editor_collapsed":true }
 
 [node name="line1" type="Control" parent="gui/hud/chatmessage"]
 
@@ -65,6 +65,7 @@ margin/bottom = 40.0
 
 [node name="menu" type="Control" parent="gui"]
 
+editor/display_folded = true
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
@@ -74,10 +75,10 @@ margin/top = 0.0
 margin/right = 40.0
 margin/bottom = 40.0
 script/script = ExtResource( 1 )
-__meta__ = { "_editor_collapsed":true }
 
 [node name="net" type="Panel" parent="gui/menu"]
 
+editor/display_folded = true
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
@@ -86,7 +87,6 @@ margin/left = 240.0
 margin/top = 130.0
 margin/right = 450.0
 margin/bottom = 350.0
-__meta__ = { "_editor_collapsed":true }
 
 [node name="playerslider" type="HSlider" parent="gui/menu/net"]
 
@@ -211,6 +211,7 @@ margin/top = 121.0
 margin/right = 197.0
 margin/bottom = 145.0
 text = "localhost"
+placeholder/alpha = 0.6
 align = 1
 focus_mode = 2
 caret/caret_blink = false
@@ -227,6 +228,7 @@ margin/top = 14.0
 margin/right = 202.0
 margin/bottom = 38.0
 text = "Guy"
+placeholder/alpha = 0.6
 align = 1
 focus_mode = 2
 caret/caret_blink = false
@@ -243,6 +245,7 @@ margin/top = 151.0
 margin/right = 200.0
 margin/bottom = 175.0
 text = "3000"
+placeholder/alpha = 0.6
 align = 1
 focus_mode = 2
 caret/caret_blink = false
@@ -263,6 +266,7 @@ enabled_focus_mode = 2
 shortcut = null
 text = "test"
 flat = false
+align = 0
 selected = 0
 items = [ "test", null, false, 0, null, "map1", null, false, 1, null ]
 

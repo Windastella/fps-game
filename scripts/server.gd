@@ -19,6 +19,7 @@ const MODE_DM = 3
 
 var mapname = "test"
 var gamemode = MODE_FFA
+var m_game = null
 
 class CClient:
 	var connected = false;
@@ -32,7 +33,7 @@ class CClient:
 	var camrot = Vector3()
 	var lv = Vector3()
 
-var client = [];
+var pclient = []
 
 const NET_PLAYER_VAR = 0;
 const NET_CHAT = 1;
@@ -50,6 +51,8 @@ const CMD_SET_NAME = 1
 const SRV_DATA_PLAYER = 0
 
 func _ready():
+	m_game = get_node("/root/game")
+	
 	var args = OS.get_cmdline_args();
 	for i in args:
 		if i == "-server":
@@ -92,7 +95,7 @@ func close_server():
 	if !err:
 		hosted = false
 		set_process(false)
-		client = []
+		pclient = []
 		print("All clients cleared.")
 		
 func check_events():
@@ -105,20 +108,7 @@ func update_server():
 		return;
 	update_time = time + (1.0/netfps);
 	
-	get_node("/root/game").game_update(gamemode)
-		
-	for i in range(0, client.size()):
-		if !check_player(i):
-			continue;
-		
-		var srv_data = [];
-		
-		for b in range(0, client.size()):
-			if !check_player(b) || i == b:
-				continue;
-			srv_data.push_back([SRV_DATA_PLAYER, b, client[b].pos, client[b].rot, client[b].camrot, client[b].lv]);
-		
-		send2c(i, [], [NET_UPDATE, srv_data]);
+	m_game.server_send_update(gamemode)
 
 func on_server_start():
 	time = 0.0;
@@ -126,10 +116,10 @@ func on_server_start():
 	mapname = get_node("/root/main/gui/menu/net/maplist").get_item_text(get_node("/root/main/gui/menu/net/maplist").get_selected())
 	maxplayer = get_node("/root/main/gui/menu/net/label5").get_text().to_int()
 	
-	client.clear();
-	client.resize(maxplayer);
-	for i in range(0, client.size()):
-		client[i] = CClient.new();
+	pclient.clear()
+	pclient.resize(maxplayer)
+	for i in range(0, pclient.size()):
+		pclient[i] = CClient.new()
 	
 	set_process(true);
 	print("Server started!")
@@ -141,9 +131,9 @@ func on_event_received(event):
 		var pid = get_empty_id();
 			
 		if pid != -1:
-			client[pid].connected = true;
-			client[pid].peer = peer
-			client[pid].address = peer.get_address()
+			pclient[pid].connected = true;
+			pclient[pid].peer = peer
+			pclient[pid].address = peer.get_address()
 			
 			send2c(pid, [], [NET_ACCEPTED, pid], true)
 			send2c(pid, [], [NET_MAPCHANGE, mapname, gamemode], true)
@@ -158,49 +148,32 @@ func on_event_received(event):
 		var pid = get_pid_from_peer(peer)
 		if pid != -1:
 			player_disconnected(pid)
-			client[pid] = CClient.new()
+			pclient[pid] = CClient.new()
 		
 		peer = null;
 	
 	elif event.get_event_type() == GDNetEvent.RECEIVE:
-		var data = event.get_var();
-		if data[0] == NET_PLAYER_VAR:
-			var pid = data[1];
-			if check_player(pid, peer.get_address()):
-				client[pid].pos = data[2]
-				client[pid].rot = data[3]
-				client[pid].camrot = data[4]
-				client[pid].lv = data[5]
-		
-		if data[0] == NET_CHAT:
-			var pid = data[1];
-			var text = data[2];
-			if check_player(pid, peer.get_address()) && text.length() > 0:
-				if text.begins_with("/"):
-					var array = text.split(" ", false);
-					parse_command(pid, array);
-				else:
-					send2c(-1, [], [NET_CHAT, "[Global] " + client[pid].name + ": "+text], true);
+		m_game.server_receive_update(event, peer)
 		
 		return;
 
 func check_player(pid, address = null):
-	if pid != -1 && client[pid].connected:
+	if pid != -1 && pclient[pid].connected:
 		if address != null:
-			if client[pid].address.get_host() != address.get_host() || client[pid].address.get_port() != address.get_port():
+			if pclient[pid].address.get_host() != address.get_host() || pclient[pid].address.get_port() != address.get_port():
 				return false;
 		return true;
 	return false;
 
 func get_empty_id():
-	for i in range(0, client.size()):
+	for i in range(0, pclient.size()):
 		if !check_player(i):
 			return i;
 	return -1;
 
 func get_pid_from_peer(peer):
-	for i in range(0, client.size()):
-		if client[i].peer.get_peer_id() == peer.get_peer_id():
+	for i in range(0, pclient.size()):
+		if pclient[i].peer.get_peer_id() == peer.get_peer_id():
 			return i;
 	return -1;
 
@@ -210,19 +183,19 @@ func send2c(pid, excl, data, rel = false):
 		msg_type = GDNetMessage.RELIABLE;
 	
 	if pid >= 0:
-		if check_player(pid) && client[pid].peer != null:
-			client[pid].peer.send_var(data, 0, msg_type);
+		if check_player(pid) && pclient[pid].peer != null:
+			pclient[pid].peer.send_var(data, 0, msg_type);
 	else:
-		for i in range(0, client.size()):
-			if !check_player(i) || i in excl || client[i].peer == null:
+		for i in range(0, pclient.size()):
+			if !check_player(i) || i in excl || pclient[i].peer == null:
 				continue;
-			client[i].peer.send_var(data, 0, msg_type);
+			pclient[i].peer.send_var(data, 0, msg_type);
 
 func player_connected(pid):
 	var srv_data = [];
 	
 	# PLayer Data
-	for id in range(0, client.size()):
+	for id in range(0, pclient.size()):
 		if check_player(id) && id != pid:
 			srv_data.push_back([SRV_DATA_PLAYER, id]);
 	
@@ -230,14 +203,14 @@ func player_connected(pid):
 	
 	send2c(-1, [pid], [NET_CLIENT_CONNECTED, pid], true);
 	
-	print(client[pid].name + " connected.");
-	send2c(-1, [], [NET_CHAT, client[pid].name + " connected."], true);
+	print(pclient[pid].name + " connected.");
+	send2c(-1, [], [NET_CHAT, pclient[pid].name + " connected."], true);
 
 func player_disconnected(pid):
 	send2c(-1, [pid], [NET_CLIENT_DISCONNECTED, pid], true);
 	
-	print(client[pid].name + " disconnected.");
-	send2c(-1, [pid], [NET_CHAT, client[pid].name + " disconnected."], true);
+	print(pclient[pid].name + " disconnected.");
+	send2c(-1, [pid], [NET_CHAT, pclient[pid].name + " disconnected."], true);
 
 func parse_command(parser, cmd):
 	if cmd[0] == "/unstuck":
