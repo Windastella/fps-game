@@ -102,8 +102,9 @@ func connect(ip = "localhost", port = 3000):
 		menu.hide();
 		hud.show();
 		
-		localplayer = env.add_scene("res://assets/prefab/testplayer.scn");
-		localplayer.set_name("player");
+		localplayer = env.add_scene("res://assets/prefab/testplayer.scn")
+		localplayer.set_name("player")
+		#localplayer.isAlive = false
 		
 		set_process(true);
 

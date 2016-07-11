@@ -32,7 +32,9 @@ class CClient:
 	var rot = Vector3()
 	var camrot = Vector3()
 	var lv = Vector3()
-
+	
+	var st = true
+	
 var pclient = []
 
 const NET_PLAYER_VAR = 0;

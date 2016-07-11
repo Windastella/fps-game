@@ -7,8 +7,8 @@ class CScene:
 var loaded_scene = [];
 
 func _ready():
-	return;
-
+	return
+		
 func scene_load(path):
 	for i in loaded_scene:
 		if i.path == path:
