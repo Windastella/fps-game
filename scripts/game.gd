@@ -18,7 +18,7 @@ const NET_CLIENT_DISCONNECTED = 5
 const NET_SRV_INIT = 6
 const NET_UPDATE = 7
 const NET_MAPCHANGE = 8
-const NET_PHYSIC_VAR = 9
+#const NET_PHYSIC_VAR = 9
 
 var player
 var pos
@@ -51,9 +51,9 @@ func server_send_update(gamemode = MODE_FFA):
 		srv_players_update(i)
 		
 		#if update flag is up...
-		if upt_physic:
+		"""if upt_physic:
 			#...update physic to players
-			srv_physic_update(i)
+			srv_physic_update(i)"""
 		
 func srv_players_update(i):
 	var srv_data = []
@@ -61,7 +61,7 @@ func srv_players_update(i):
 	for b in range(0, srv.pclient.size()):
 		if !srv.check_player(b) || i == b:
 			continue
-		srv_data.push_back([SRV_DATA_PLAYER, b, srv.pclient[b].pos, srv.pclient[b].rot, srv.pclient[b].camrot, srv.pclient[b].lv, srv.pclient[b].st])
+		srv_data.push_back([SRV_DATA_PLAYER, b, srv.pclient[b].pos, srv.pclient[b].rot, srv.pclient[b].camrot, srv.pclient[b].lv,srv.pclient[b].st])
 		
 	srv.send2c(i, [], [srv.NET_UPDATE, srv_data])
 	
@@ -85,14 +85,15 @@ func server_receive_update(event, peer):
 			srv.pclient[vpid].rot = data[3]
 			srv.pclient[vpid].camrot = data[4]
 			srv.pclient[vpid].lv = data[5]
+			#srv.pclient[vpid].hp = data[6]
 			srv.pclient[vpid].st = data[6]
 	
 	#For network physic
-	if data[0] == NET_PHYSIC_VAR:
-		#got physic update, flag for update to all player
+	"""if data[0] == NET_PHYSIC_VAR:
+		got physic update, flag for update to all player
 		upt_physic = true
-		#physic bodies data
-		phybodies = data[1]
+		physic bodies data
+		phybodies = data[1]"""
 	
 	#For in game chat
 	if data[0] == NET_CHAT:
@@ -115,6 +116,7 @@ func client_receive_update(data, gamemode = MODE_FFA):
 		var vrot = data[3]
 		var vcamrot = data[4]
 		var vlv = data[5]
+		#var vhp = data[7]
 		var vst = data[6]
 		
 		var node = env.get_node("vplayer_"+str(vpid))
@@ -123,10 +125,11 @@ func client_receive_update(data, gamemode = MODE_FFA):
 			node.get_node("body").set_rotation(vrot)
 			node.get_node("body/cam").set_rotation(vcamrot)
 			node.set_linear_velocity(vlv)
+			#node.hp = vhp
 			node.isAlive = vst
 	
 	#receive network physic from host
-	if data[0] == SRV_DATA_PHYSIC:
+	"""if data[0] == SRV_DATA_PHYSIC:
 		if !srv.hosted:
 			var bodies = data[1]
 			for i in range(0, bodies.size()):
@@ -139,7 +142,7 @@ func client_receive_update(data, gamemode = MODE_FFA):
 				if node != null:
 					node.set_translation(vpos)
 					node.set_rotation(vrot)
-					node.set_linear_velocity(vlv)
+					node.set_linear_velocity(vlv)"""
 
 func client_init(data):
 	if data[0] == SRV_DATA_PLAYER:
@@ -151,14 +154,14 @@ func client_init(data):
 
 func client_send_update():
 	#send data if hosted as server
-	if srv.hosted:
+	"""if srv.hosted:
 		var bodies = []
 		var b = get_tree().get_nodes_in_group("rigidbodies")
 		bodies.resize(b.size())
 		for i in range(0, b.size()):
 			bodies[i] = [b[i].get_translation(), b[i].get_rotation(), b[i].get_linear_velocity()]
 		if bodies != phybodies:
-			clt.send_var([NET_PHYSIC_VAR, bodies])
+			clt.send_var([NET_PHYSIC_VAR, bodies])"""
 		
 	#local player update
 	var data = []
@@ -167,5 +170,7 @@ func client_send_update():
 		rot = clt.localplayer.get_node("body").get_rotation()
 		camrot = clt.localplayer.get_node("body/cam").get_rotation()
 		lv = clt.localplayer.get_linear_velocity()
+		#hp = clt.localplayer.hp
 		st = clt.localplayer.isAlive
+		
 		clt.send_var([NET_PLAYER_VAR, clt.pid, pos, rot, camrot, lv, st])

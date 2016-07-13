@@ -33,6 +33,7 @@ class CClient:
 	var camrot = Vector3()
 	var lv = Vector3()
 	
+	var hp = 100
 	var st = true
 	
 var pclient = []
@@ -88,7 +89,8 @@ func host(host = "localhost" ,port = 3000):
 		set_process(true);
 
 func close_server():
-	
+	print("Disconnect all players...")
+	disconnect_all()
 	print("Shutting down server")
 	var err = packet.unbind()
 	
@@ -191,8 +193,22 @@ func send2c(pid, excl, data, rel = false):
 		for i in range(0, pclient.size()):
 			if !check_player(i) || i in excl || pclient[i].peer == null:
 				continue;
-			pclient[i].peer.send_var(data, 0, msg_type);
+			pclient[i].peer.send_var(data, 0, msg_type)
+			
+func disconnect_player(pid):
+	if pid >= 0:
+		if check_player(pid) && pclient[pid].peer != null:
+			pclient[pid].peer.disconnect()
+	else:
+		for i in range(0, pclient.size()):
+			if !check_player(i) || pclient[i].peer == null:
+				continue
+			pclient[i].peer.disconnect()
 
+func disconnect_all():
+	for i in range(0, pclient.size()):
+		disconnect_player(i)
+		
 func player_connected(pid):
 	var srv_data = [];
 	

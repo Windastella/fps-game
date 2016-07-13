@@ -1,6 +1,7 @@
 extends RigidBody
 
 var isAlive = true
+var hp = 100
 
 export var view_sensitivity = 0.3
 
@@ -9,7 +10,7 @@ export var jump_speed = 3
 export var max_accel = 0.02
 export var air_accel = 0.1
 
-#For ray cast calcu
+#For ray cast calcution
 var to
 var from
 export var raylength = 1000
@@ -24,8 +25,8 @@ func _input(ie):
 				yaw = fmod(yaw - ie.relative_x * view_sensitivity, 360)
 				pitch = max(min(pitch - ie.relative_y * view_sensitivity, 90), -90)
 		
-				get_node("body").set_rotation(Vector3(0, deg2rad(yaw), 0))
-				get_node("body/cam").set_rotation(Vector3(deg2rad(pitch), 0, 0))
+				get_node("/root/client").localplayer.get_node("body").set_rotation(Vector3(0, deg2rad(yaw), 0))
+				get_node("/root/client").localplayer.get_node("body/cam").set_rotation(Vector3(deg2rad(pitch), 0, 0))
 			
 func _integrate_forces(state):
 	if isAlive:
@@ -82,10 +83,9 @@ func _fixed_process(delta):
 			
 			if collider != null && collider extends RigidBody:
 				if collider.is_in_group("player"):
-					print("Hit a body")
-				collider.apply_impulse(result.position-collider.get_global_transform().origin, -result["normal"]*4*collider.get_mass())
-	
-	print(get_translation())
+					print("Hit ", collider.get_name())
+				#collider.apply_impulse(result.position-collider.get_global_transform().origin, -result["normal"]*4*collider.get_mass())
+				
 func _enter_tree():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 

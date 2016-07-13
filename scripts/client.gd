@@ -61,7 +61,8 @@ func _ready():
 func _input(ie):
 	if ie.type == InputEvent.KEY:
 		if ie.pressed && ie.scancode == KEY_ESCAPE && connected:
-			get_node("/root/server").close_server()
+			if get_node("/root/server").hosted:
+				get_node("/root/server").close_server()
 			disconnected()
 
 func disconnected():
