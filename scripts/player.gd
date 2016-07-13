@@ -9,6 +9,11 @@ export var jump_speed = 3
 export var max_accel = 0.02
 export var air_accel = 0.1
 
+#For ray cast calcu
+var to
+var from
+export var raylength = 1000
+
 func _input(ie):
 	if get_node("/root/client").connected && isAlive:
 		if get_node("/root/client").localplayer == get_node("."):
@@ -61,9 +66,27 @@ func _integrate_forces(state):
 
 func _ready():
 	set_process_input(true)
-	
-#func _enter_tree():
-	#Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	set_fixed_process(true)
 
-#func _exit_tree():
-	#Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+func _fixed_process(delta):
+	var screensize = OS.get_window_size()/2
+	from =  get_node("body/cam").project_ray_origin(screensize)
+	to = from + get_node("body/cam").project_ray_normal(screensize) * raylength
+	
+	var space_state = get_world().get_direct_space_state()
+	var result = space_state.intersect_ray(from, to)
+	
+	if Input.is_action_pressed("Fire1"):
+		if !result.empty():
+			var collider = result.collider
+			
+			if collider != null && collider extends RigidBody:
+				if collider.is_in_group("player"):
+					print("Hit a body")
+				collider.apply_impulse(result.position-collider.get_global_transform().origin, -result["normal"]*4*collider.get_mass())
+
+func _enter_tree():
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+func _exit_tree():
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
