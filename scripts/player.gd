@@ -84,7 +84,8 @@ func _fixed_process(delta):
 				if collider.is_in_group("player"):
 					print("Hit a body")
 				collider.apply_impulse(result.position-collider.get_global_transform().origin, -result["normal"]*4*collider.get_mass())
-
+	
+	print(get_translation())
 func _enter_tree():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 

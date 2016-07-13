@@ -12,6 +12,7 @@ script/source = "extends Control\n\nfunc _ready():\n\tset_process(true)\n\tvar s
 
 [node name="gui" type="Control" parent="."]
 
+editor/display_folded = true
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
