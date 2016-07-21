@@ -18,7 +18,6 @@ const NET_CLIENT_DISCONNECTED = 5
 const NET_SRV_INIT = 6
 const NET_UPDATE = 7
 const NET_MAPCHANGE = 8
-#const NET_PHYSIC_VAR = 9
 
 var player
 var pos
@@ -28,7 +27,6 @@ var lv
 var st
 
 var env = null
-var upt_physic = false
 
 var srv = null
 var clt = null
@@ -48,14 +46,9 @@ func server_send_update(gamemode = MODE_FFA):
 			continue;
 			
 		#update all players
-		srv_players_update(i)
+		server_players_update(i)
 		
-		#if update flag is up...
-		"""if upt_physic:
-			#...update physic to players
-			srv_physic_update(i)"""
-		
-func srv_players_update(i):
+func server_players_update(i):
 	var srv_data = []
 		
 	for b in range(0, srv.pclient.size()):
@@ -65,15 +58,7 @@ func srv_players_update(i):
 		
 	srv.send2c(i, [], [srv.NET_UPDATE, srv_data])
 	
-func srv_physic_update(i):
-	var srv_data = []
-	
-	srv_data.push_back([SRV_DATA_PHYSIC, phybodies])
-	srv.send2c(i, [], [srv.NET_UPDATE, srv_data])
-	upt_physic = false
-	
 #Server receive update
-var phybodies = []
 func server_receive_update(event, peer):
 	var data = event.get_var();
 	
@@ -85,15 +70,7 @@ func server_receive_update(event, peer):
 			srv.pclient[vpid].rot = data[3]
 			srv.pclient[vpid].camrot = data[4]
 			srv.pclient[vpid].lv = data[5]
-			#srv.pclient[vpid].hp = data[6]
 			srv.pclient[vpid].st = data[6]
-	
-	#For network physic
-	"""if data[0] == NET_PHYSIC_VAR:
-		got physic update, flag for update to all player
-		upt_physic = true
-		physic bodies data
-		phybodies = data[1]"""
 	
 	#For in game chat
 	if data[0] == NET_CHAT:
@@ -116,7 +93,6 @@ func client_receive_update(data, gamemode = MODE_FFA):
 		var vrot = data[3]
 		var vcamrot = data[4]
 		var vlv = data[5]
-		#var vhp = data[7]
 		var vst = data[6]
 		
 		var node = env.get_node("vplayer_"+str(vpid))
@@ -125,24 +101,7 @@ func client_receive_update(data, gamemode = MODE_FFA):
 			node.get_node("body").set_rotation(vrot)
 			node.get_node("body/cam").set_rotation(vcamrot)
 			node.set_linear_velocity(vlv)
-			#node.hp = vhp
 			node.isAlive = vst
-	
-	#receive network physic from host
-	"""if data[0] == SRV_DATA_PHYSIC:
-		if !srv.hosted:
-			var bodies = data[1]
-			for i in range(0, bodies.size()):
-				var d = bodies[i]
-				var vpos = d[0]
-				var vrot = d[1]
-				var vlv = d[2]
-		
-				var node = get_tree().get_nodes_in_group("rigidbodies")[i]
-				if node != null:
-					node.set_translation(vpos)
-					node.set_rotation(vrot)
-					node.set_linear_velocity(vlv)"""
 
 func client_init(data):
 	if data[0] == SRV_DATA_PLAYER:
@@ -153,15 +112,6 @@ func client_init(data):
 		#get_node("/root/main/gui/ingame/map_overview").add_object(scn);
 
 func client_send_update():
-	#send data if hosted as server
-	"""if srv.hosted:
-		var bodies = []
-		var b = get_tree().get_nodes_in_group("rigidbodies")
-		bodies.resize(b.size())
-		for i in range(0, b.size()):
-			bodies[i] = [b[i].get_translation(), b[i].get_rotation(), b[i].get_linear_velocity()]
-		if bodies != phybodies:
-			clt.send_var([NET_PHYSIC_VAR, bodies])"""
 		
 	#local player update
 	var data = []
@@ -170,7 +120,6 @@ func client_send_update():
 		rot = clt.localplayer.get_node("body").get_rotation()
 		camrot = clt.localplayer.get_node("body/cam").get_rotation()
 		lv = clt.localplayer.get_linear_velocity()
-		#hp = clt.localplayer.hp
 		st = clt.localplayer.isAlive
 		
 		clt.send_var([NET_PLAYER_VAR, clt.pid, pos, rot, camrot, lv, st])
