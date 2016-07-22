@@ -67,8 +67,9 @@ func _input(ie):
 
 func disconnected():
 	connected = false;
-	peer.disconnect();
-	print("Disconnecting...")
+	peer.disconnect()
+	add_msg("Disconnected")
+	print("Disconnected")
 	menu.show()
 	hud.hide()
 	env.clear_map()
@@ -92,11 +93,13 @@ func connect(ip = "localhost", port = 3000):
 		if (packet.is_event_available()):
 			var event = packet.get_event()
 			if (event.get_event_type() == GDNetEvent.CONNECT):
-				print("Connected.");
+				add_msg("Connected")
+				print("Connected")
 				connected = true;
 				break;
 	
 	if !connected:
+		add_msg("Failed Connecting to ",ip,":",str(port),".")
 		print("Failed Connecting to ",ip,":",str(port),".")
 		disconnected()
 	else:
@@ -119,6 +122,7 @@ func _process(delta):
 			menu.show()
 			hud.hide()
 			env.clear_map()
+			add_msg("Client disconnected.")
 			print("Client disconnected.")
 			peer = null
 			
@@ -149,6 +153,7 @@ func _process(delta):
 				mapname = data[1]
 				gamemode = data[2]
 				env.add_map("res://assets/maps/" + mapname +".tscn")
+				add_msg("Map change to " + mapname)
 				print("Map change to " + mapname)
 				
 			if data[0] == NET_UPDATE:
@@ -166,16 +171,16 @@ func _process(delta):
 					var pid = data[2];
 					var newname = data[3];
 					
-					var msg = str(pid) + " Changed his/her name to " + newname;
+					var msg = "Player " + str(pid) + ": Changed his/her name to " + newname;
 					if msg.length() > 32:
 						msg = msg.substr(0, 32)+"..";
-					get_node("/root/main/gui/hud/chatmessage").add_msg(msg);
+					add_msg(msg);
 			
 			if data[0] == NET_CHAT:
 				var msg = data[1];
 				if msg.length() > 32:
 					msg = msg.substr(0, 32)+"..";
-				get_node("/root/main/gui/hud/chatmessage").add_msg(msg);
+				add_msg(msg)
 	
 	if delay < 1.0/netfps:
 		delay += delta;
@@ -202,3 +207,5 @@ func send_var(data, rel = false):
 func say(id, text):
 	send_var([NET_CHAT, id, text], true);
 
+func add_msg(msg):
+	get_node("/root/main/gui/chat").add_msg(msg)
