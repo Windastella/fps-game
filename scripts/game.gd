@@ -97,6 +97,7 @@ func client_receive_update(data, gamemode = MODE_FFA):
 		
 		var node = env.get_node("vplayer_"+str(vpid))
 		if node != null:
+			node.PID = vpid
 			node.set_translation(vpos)
 			node.get_node("body").set_rotation(vrot)
 			node.get_node("body/cam").set_rotation(vcamrot)

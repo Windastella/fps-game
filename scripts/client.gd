@@ -105,7 +105,6 @@ func connect(ip = "localhost", port = 3000):
 		
 		localplayer = env.add_scene("res://assets/prefab/testplayer.scn")
 		localplayer.set_name("player")
-		#localplayer.isAlive = false
 		
 		set_process(true);
 
@@ -128,18 +127,19 @@ func _process(delta):
 			
 			if data[0] == NET_ACCEPTED:
 				pid = data[1];
+				localplayer.PID = pid
 				
 			if data[0] == NET_CLIENT_CONNECTED:
-				var pid = data[1];
+				var vpid = data[1];
 				
 				var scn = env.add_scene("res:///assets/prefab/testplayer.scn");
-				scn.set_name("vplayer_"+str(pid));
+				scn.set_name("vplayer_"+str(vpid));
 				#get_node("/root/main/gui/ingame/map_overview").add_object(scn);
 			
 			if data[0] == NET_CLIENT_DISCONNECTED:
-				var pid = data[1];
+				var vpid = data[1];
 				
-				env.remove_child(env.get_node("vplayer_"+str(pid)));
+				env.remove_child(env.get_node("vplayer_"+str(vpid)));
 			
 			if data[0] == NET_SRV_INIT:
 				for i in data[1]:
@@ -169,13 +169,13 @@ func _process(delta):
 					var msg = str(pid) + " Changed his/her name to " + newname;
 					if msg.length() > 32:
 						msg = msg.substr(0, 32)+"..";
-					#get_node("/root/main/gui/hud/chatmessage").add_msg(msg);
+					get_node("/root/main/gui/hud/chatmessage").add_msg(msg);
 			
 			if data[0] == NET_CHAT:
 				var msg = data[1];
 				if msg.length() > 32:
 					msg = msg.substr(0, 32)+"..";
-				#get_node("/root/main/gui/hud/chatmessage").add_msg(msg);
+				get_node("/root/main/gui/hud/chatmessage").add_msg(msg);
 	
 	if delay < 1.0/netfps:
 		delay += delta;

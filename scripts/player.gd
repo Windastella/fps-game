@@ -1,5 +1,6 @@
 extends RigidBody
 
+var PID
 var isAlive = true
 var hp = 100
 
@@ -70,6 +71,7 @@ func _ready():
 	set_fixed_process(true)
 
 func _fixed_process(delta):
+	print(PID)
 	var screensize = OS.get_window_size()/2
 	from =  get_node("body/cam").project_ray_origin(screensize)
 	to = from + get_node("body/cam").project_ray_normal(screensize) * raylength
@@ -84,7 +86,7 @@ func _fixed_process(delta):
 			if collider != null && collider extends RigidBody:
 				if collider.is_in_group("player"):
 					print("Hit ", collider.get_name())
-				#collider.apply_impulse(result.position-collider.get_global_transform().origin, -result["normal"]*4*collider.get_mass())
+				collider.apply_impulse(result.position-collider.get_global_transform().origin, -result["normal"]*4*collider.get_mass())
 				
 func _enter_tree():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
