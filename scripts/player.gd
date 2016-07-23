@@ -71,7 +71,7 @@ func _ready():
 	set_fixed_process(true)
 
 func _fixed_process(delta):
-	print(PID)
+	#print(PID)
 	var screensize = OS.get_window_size()/2
 	from =  get_node("body/cam").project_ray_origin(screensize)
 	to = from + get_node("body/cam").project_ray_normal(screensize) * raylength

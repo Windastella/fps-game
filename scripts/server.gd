@@ -165,14 +165,14 @@ func check_player(pid, address = null):
 	if pid != -1 && pclient[pid].connected:
 		if address != null:
 			if pclient[pid].address.get_host() != address.get_host() || pclient[pid].address.get_port() != address.get_port():
-				return false;
-		return true;
-	return false;
+				return false
+		return true
+	return false
 
 func get_empty_id():
 	for i in range(0, pclient.size()):
 		if !check_player(i):
-			return i;
+			return i
 	return -1;
 
 func get_pid_from_peer(peer):
@@ -231,7 +231,12 @@ func player_disconnected(pid):
 	send2c(-1, [pid], [NET_CHAT, pclient[pid].name + " disconnected."], true);
 
 func parse_command(parser, cmd):
+	if cmd[0] == "/ping":
+		send2c(parser, [], [NET_CHAT, "Ping : " + str(pclient[parser].peer.get_avg_rtt()/2) + "ms"], true)
 	if cmd[0] == "/unstuck":
-		send2c(parser, [], [NET_CMD, CMD_SET_POS, Vector3()], true);
+		send2c(parser, [], [NET_CMD, CMD_SET_POS, Vector3()], true)
 	if cmd[0] == "/setname" && cmd.size() > 1 && cmd[1] != "":
-		send2c(-1, [], [NET_CMD, CMD_SET_NAME, parser, cmd[1]], true);
+		send2c(-1, [], [NET_CMD, CMD_SET_NAME, parser, cmd[1]], true)
+	if cmd[0] == "/kick" && cmd.size() > 1 && cmd[1] != "":
+		send2c(-1, [], [NET_CHAT, "You were kicked out of the server."], true)
+		#disconnect_player(int(cmd[1]))

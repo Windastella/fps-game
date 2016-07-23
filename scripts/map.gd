@@ -45,6 +45,7 @@ func add_map(path):
 		get_node("/root/client").disconnected()
 		print("Cannot find map...")
 		return
+	get_node("/root/main/gui/load").show()
 	set_process(true)
 	
 	
@@ -53,6 +54,7 @@ func add_map(path):
 func _process(delta):
 	if loader == null:
 		# no need to process anymore
+		get_node("/root/main/gui/load").hide()
 		set_process(false)
 		return
 	if wait_frames > 0: # wait for frames to let the "loading" animation to show up
@@ -86,6 +88,7 @@ func _process(delta):
 func show_loading():
 	var progress = float(loader.get_stage()) / loader.get_stage_count()
 	print("Load progress:", progress)
+	get_node("/root/main/gui/load/bar").set_val(100*progress)
 	
 func clear_map():
 	var childs = get_children()

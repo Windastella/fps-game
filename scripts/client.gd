@@ -61,8 +61,8 @@ func _ready():
 func _input(ie):
 	if ie.type == InputEvent.KEY:
 		if ie.pressed && ie.scancode == KEY_ESCAPE && connected:
-			if get_node("/root/server").hosted:
-				get_node("/root/server").close_server()
+			#if get_node("/root/server").hosted:
+			#	get_node("/root/server").close_server()
 			disconnected()
 
 func disconnected():
@@ -99,7 +99,7 @@ func connect(ip = "localhost", port = 3000):
 				break;
 	
 	if !connected:
-		add_msg("Failed Connecting to ",ip,":",str(port),".")
+		add_msg("Failed Connecting to " + ip + ":" + str(port))
 		print("Failed Connecting to ",ip,":",str(port),".")
 		disconnected()
 	else:
