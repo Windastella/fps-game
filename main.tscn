@@ -7,7 +7,7 @@
 
 [sub_resource type="GDScript" id=1]
 
-script/source = "extends Control\n\nfunc _ready():\n\tset_process(true)\n\tvar screensize = OS.get_window_size() /2\n\tget_node(\"hud/crosshair\").set_pos(screensize)\n\t\nfunc _process(delta):\n\tget_node(\"fps\").set_text(\"FPS : \" + str(OS.get_frames_per_second()))\n"
+script/source = "extends Control\n\nvar enabled = true\nvar timer = 0\nvar endtime = 0.1\n\nfunc _ready():\n\tset_process(true)\n\tvar screensize = OS.get_window_size() /2\n\tget_node(\"hud/crosshair\").set_pos(screensize)\n\t\nfunc _process(dt):\n\tget_node(\"fps\").set_text(\"FPS : \" + str(OS.get_frames_per_second()))"
 
 [node name="main" type="Node"]
 
@@ -86,7 +86,6 @@ texture = ExtResource( 2 )
 
 [node name="menu" type="Control" parent="gui"]
 
-editor/display_folded = true
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
